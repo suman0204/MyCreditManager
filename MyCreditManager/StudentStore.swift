@@ -21,7 +21,6 @@ struct StudetStore {
     }
     
     mutating func deleteStudent(name: String) {
-        print(studentList)
         if let index = studentList.firstIndex(where: {$0.name == name}) {
             studentList.remove(at: index)
             print("\(name) 학생을 삭제하였습니다.")
@@ -43,6 +42,8 @@ struct StudetStore {
         if let index = studentList.firstIndex(where: {$0.name == name}) {
             studentList[index].subjectAndGrade.removeValue(forKey: subject)
             print("\(name) 학생의 \(subject) 과목의 성적이 삭제되었습니다.")
+        } else {
+            print("\(name) 학생을 찾지 못했습니다.")
         }
     }
     
@@ -56,9 +57,12 @@ struct StudetStore {
                 sum += gradeToFloat(grade: $1)
             }
             average = sum / Float(studentList[index].subjectAndGrade.count)
+            print("평점: \(String(format: "%.2f", average))")
+        } else {
+            print("\(name) 학생을 찾지 못했습니다.")
         }
         
-        print("평점: \(String(format: "%.2f", average))")
+        
     }
     
     mutating func gradeToFloat(grade: String) -> Float {

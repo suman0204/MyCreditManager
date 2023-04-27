@@ -9,9 +9,10 @@ import Foundation
 start()
 
 func start() {
+    var run: Bool = true
     var studentStore = StudetStore()
 
-    while(true) {
+    while run {
         print("원하는 기능을 입력해주세요.")
         print("1: 학생추가, 2: 학생삭제, 3: 성적추가(변경), 4: 성적삭제, 5: 평점보기, X: 종료")
         
@@ -20,17 +21,16 @@ func start() {
             case "1":
                 print("추가할 학생의 이름을 입력해주세요")
                 if let name = readLine() {
-                    if name.isEmpty {
+                    if name.isEmpty || !checkRule(string: name){
                         print("입력이 잘못되었습니다. 다시 확인해주세요.")
                     } else {
                         studentStore.addStudent(name: name)
-                        print(studentStore.studentList)
                     }
                 }
             case "2":
                 print("삭제할 학생의 이름을 입력해주세요")
                 if let name = readLine() {
-                    if name.isEmpty {
+                    if name.isEmpty || !checkRule(string: name){
                         print("입력이 잘못되었습니다. 다시 확인해주세요.")
                     } else {
                         studentStore.deleteStudent(name: name)
@@ -44,13 +44,15 @@ func start() {
                 if let input = readLine() {
                     let studentInfo = input.components(separatedBy: " ")
                     
-                    let name = studentInfo[0]
-                    let subject = studentInfo[1]
-                    let grade = studentInfo[2]
-                    
-                    studentStore.addGrade(name: name, subject: subject, grade: grade)
-                } else {
-                    print("입력이 잘못되었습니다. 다시 확인해주세요.")
+                    if studentInfo.count == 3 && studentStore.gradeToFloat(grade: studentInfo[2]) != -1 && checkRule(string: studentInfo[0]){
+                        let name = studentInfo[0]
+                        let subject = studentInfo[1]
+                        let grade = studentInfo[2]
+                        
+                        studentStore.addGrade(name: name, subject: subject, grade: grade)
+                    } else {
+                        print("입력이 잘못되었습니다. 다시 확인해주세요.")
+                    }
                 }
                 
             case "4":
@@ -59,18 +61,20 @@ func start() {
                 if let input = readLine() {
                     let studentInfo = input.components(separatedBy: " ")
                     
-                    let name = studentInfo[0]
-                    let subject = studentInfo[1]
-                    
-                    studentStore.deletGrade(name: name, subject: subject)
-                } else {
-                    print("입력이 잘못되었습니다. 다시 확인해주세요.")
+                    if studentInfo.count == 2 && checkRule(string: studentInfo[0]){
+                        let name = studentInfo[0]
+                        let subject = studentInfo[1]
+                        
+                        studentStore.deletGrade(name: name, subject: subject)
+                    } else {
+                        print("입력이 잘못되었습니다. 다시 확인해주세요.")
+                    }
                 }
                 
             case "5":
                 print("평점을 알고싶은 학생의 이름을 입력해세요")
                 if let name = readLine() {
-                    if name.isEmpty {
+                    if name.isEmpty || !checkRule(string: name){
                         print("입력이 잘못되었습니다. 다시 확인해주세요.")
                     } else {
                         studentStore.average(name: name)
@@ -79,12 +83,17 @@ func start() {
                 
             case "X":
                 print("프로그램을 종료합니다...")
-                break
+                return run = false
                 
             default:
                 print("뭔가 입력이 잘못되었습니다. 1~5 사이의 숫자 혹은 X를 입력해주세요.")
             }
         }
     }
+}
+
+func checkRule(string: String) -> Bool {
+    let nicknameRegex = "^[0-9a-zA-Z]*$"
+    return  NSPredicate(format: "SELF MATCHES %@", nicknameRegex).evaluate(with: string)
 }
 
